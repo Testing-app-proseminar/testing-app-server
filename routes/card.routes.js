@@ -58,3 +58,22 @@ router.get("/cards/:cardId", (req, res) => {
 });
 
 
+router.put("/cards/:cardId/edit", (req, res) => {
+  const { cardId } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(cardId)) {
+    res.status(400).json({ message: "specified card ID is not valid" });
+    return;
+  }
+
+  Game.findByIdAndUpdate(cardId, req.body, { new: true })
+    .then((updatedCard) => res.json(updatedCard))
+    .catch((err) => {
+      console.log("Error UPDATING the specified Card...", err);
+      res.status(500).json({
+        message: "We are sorry, we couldn't update your Card",
+      });
+    });
+});
+
+
