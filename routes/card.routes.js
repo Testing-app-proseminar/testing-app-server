@@ -77,3 +77,20 @@ router.put("/cards/:cardId/edit", (req, res) => {
 });
 
 
+router.delete("/cards/:cardId", (req, res) => {
+  const { cardId } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(cardId)) {
+    res.status(400).json({ message: "specified card ID is not valid" });
+    return;
+  }
+
+  Card.findByIdAndDelete(cardId)
+    .then(() => res.json({ message: "Your card has been deleted" }))
+    .catch((err) => {
+      console.log("Error DELETING the specified Card...", err);
+      res.status(500).json({
+        message: "We are sorry, we couldn't delete your Card",
+      });
+    });
+});
