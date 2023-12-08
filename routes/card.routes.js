@@ -26,3 +26,14 @@ router.post("/cards", (req, res) => {
     });
 });
 
+
+router.get("/cards", (req, res) => {
+  Card.find()
+    .then((allCards) => res.json(allCards))
+    .catch((err) => {
+      console.log("Error getting the list of Cards...", err);
+      res.status(500).json({
+        message: "We are sorry, we couldn't get your Card's list",
+      });
+    });
+});
