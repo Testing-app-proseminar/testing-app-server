@@ -37,3 +37,24 @@ router.get("/cards", (req, res) => {
       });
     });
 });
+
+
+router.get("/cards/:cardId", (req, res) => {
+  const { cardId } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(cardId)) {
+    res.status(400).json({ message: "Specified card ID is not valid" });
+    return;
+  }
+
+  Card.findById(cardId)
+    .then((card) => res.status(200).json(card))
+    .catch((err) => {
+      console.log("Error getting the specified Card...", err);
+      res.status(500).json({
+        message: "We are sorry, we couldn't get your Card",
+      });
+    });
+});
+
+
