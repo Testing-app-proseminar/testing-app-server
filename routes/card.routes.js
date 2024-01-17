@@ -94,3 +94,5 @@ router.delete("/cards/:cardId", (req, res) => {
       });
     });
 });
+
+module.exports = router;
