@@ -3,31 +3,22 @@ const mongoose = require("mongoose");
 
 const Card = require("../models/Card.model");
 
-const { isAuthenticated } = require("../middleware/jwt.middleware")
+const { isAuthenticated } = require("../middleware/jwt.middleware");
+const createCard = require("../services/cardService");
 
 
 
-router.post("/cards", isAuthenticated, (req, res) => {
-
-  const newCard = {
-    createdBy: req.payload._id,
-    title: req.body.title,
-    status: req.body.status,
-    topic: req.body.topic,
-    category: req.body.category,
-    content: req.body.content,
-    link: req.body.link,
-    consumeTime: req.body.consumeTime,
-  };
-
-  Card.create(newCard)
-    .then((response) => res.json(response))
-    .catch((err) => {
-      console.log("Error creating a new Card...", err);
-      res.status(500).json({
-        message: "We are sorry, we couldn't create your card",
-      });
-    });
+router.post("/cards", isAuthenticated, async (req, res) => {
+      try {
+        const newCard = await createCard({...req.body, createdBy: req.payload._id})
+        res.json(newCard)
+      }
+      catch(err){
+        console.log("Error creating a new Card...", err);
+        res.status(500).json({
+          message: "We are sorry, we couldn't create your card",
+        });
+      }
 });
 
 
