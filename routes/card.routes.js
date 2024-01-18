@@ -3,8 +3,12 @@ const mongoose = require("mongoose");
 
 const Card = require("../models/Card.model");
 
+const { isAuthenticated } = require("../middleware/jwt.middleware")
 
-router.post("/cards", (req, res) => {
+
+
+router.post("/cards", isAuthenticated, (req, res) => {
+
   const newCard = {
     createdBy: req.payload._id,
     title: req.body.title,
@@ -28,6 +32,7 @@ router.post("/cards", (req, res) => {
 
 
 router.get("/cards", (req, res) => {
+
   Card.find()
     .then((allCards) => res.json(allCards))
     .catch((err) => {
