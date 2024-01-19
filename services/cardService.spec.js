@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const createCard = require("./cardService");
+const { createCard } = require("./cardService");
 
 describe("card", () => {
   beforeAll(() => {
@@ -28,12 +28,14 @@ describe("card", () => {
     const card = await createCard(testCardData);
 
     expect(card.title).toStrictEqual("Lemmorld!");
+    expect(card.status).toStrictEqual("To-do");
+    expect(true).toBe(mongoose.Types.ObjectId.isValid(card.createdBy));
   });
 
   test("Fails if title is missing", async () => {
     const { title, ...incompleteData } = testCardData;
 
-    expect(createCard(incompleteData)).rejects.toThrow(
+    await expect(createCard(incompleteData)).rejects.toThrow(
       "Card validation failed: title: Title is required"
     );
   });
@@ -44,8 +46,11 @@ describe("card", () => {
       createdBy: "hola:)",
     };
 
-    expect(createCard(cardWithWrongId)).rejects.toThrow(
+    await expect(createCard(cardWithWrongId)).rejects.toThrow(
       "Card validation failed: createdBy"
+    );
+    expect(false).toBe(
+      mongoose.Types.ObjectId.isValid(cardWithWrongId.createdBy)
     );
   });
 
@@ -55,7 +60,7 @@ describe("card", () => {
       status: "Hola:)",
     };
 
-    expect(createCard(cardWithWrongStatus)).rejects.toThrow(
+    await expect(createCard(cardWithWrongStatus)).rejects.toThrow(
       "Card validation failed: status"
     );
   });
