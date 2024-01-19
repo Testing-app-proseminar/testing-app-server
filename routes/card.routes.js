@@ -4,55 +4,64 @@ const mongoose = require("mongoose");
 const Card = require("../models/Card.model");
 
 const { isAuthenticated } = require("../middleware/jwt.middleware");
-const createCard = require("../services/cardService");
-
-
+const { createCard, getCards, getOneCard } = require("../services/cardService");
 
 router.post("/cards", isAuthenticated, async (req, res) => {
-      try {
-        const newCard = await createCard({...req.body, createdBy: req.payload._id})
-        res.json(newCard)
-      }
-      catch(err){
-        console.log("Error creating a new Card...", err);
-        res.status(500).json({
-          message: "We are sorry, we couldn't create your card",
-        });
-      }
-});
-
-
-router.get("/cards", (req, res) => {
-
-  Card.find()
-    .then((allCards) => res.json(allCards))
-    .catch((err) => {
-      console.log("Error getting the list of Cards...", err);
-      res.status(500).json({
-        message: "We are sorry, we couldn't get your Card's list",
-      });
+  try {
+    const newCard = await createCard({
+      ...req.body,
+      createdBy: req.payload._id,
     });
+    res.json(newCard);
+  } catch (err) {
+    console.log("Error creating a new Card...", err);
+    res.status(500).json({
+      message: "We are sorry, we couldn't create your card",
+    });
+  }
 });
 
-
-router.get("/cards/:cardId", (req, res) => {
-  const { cardId } = req.params;
-
-  if (!mongoose.Types.ObjectId.isValid(cardId)) {
-    res.status(400).json({ message: "Specified card ID is not valid" });
-    return;
+router.get("/cards", async (req, res) => {
+  try {
+    const allCards = await getCards();
+    res.json(allCards);
+  } catch (err) {
+    console.log("Error getting the list of Cards...", err);
+    res.status(500).json({
+      message: "We are sorry, we couldn't get your Card's list",
+    });
   }
 
-  Card.findById(cardId)
-    .then((card) => res.status(200).json(card))
-    .catch((err) => {
-      console.log("Error getting the specified Card...", err);
-      res.status(500).json({
-        message: "We are sorry, we couldn't get your Card",
-      });
-    });
 });
 
+router.get("/cards/:cardId", async (req, res) => {
+  //const { cardId } = req.params;
+
+  try {
+    const findCardById = await getOneCard({cardId: req.params});
+    res.status(200).json(findCardById)
+  } catch (err){
+    console.log("Error getting the specified Card...", err);
+    res.status(500).json({
+      message: "We are sorry, we couldn't get your Card",
+    });
+  }
+
+
+//   if (!mongoose.Types.ObjectId.isValid(cardId)) {
+//     res.status(400).json({ message: "Specified card ID is not valid" });
+//     return;
+//   }
+
+//   Card.findById(cardId)
+//     .then((card) => res.status(200).json(card))
+//     .catch((err) => {
+//       console.log("Error getting the specified Card...", err);
+//       res.status(500).json({
+//         message: "We are sorry, we couldn't get your Card",
+//       });
+//     });
+ });
 
 router.put("/cards/:cardId/edit", (req, res) => {
   const { cardId } = req.params;
@@ -71,7 +80,6 @@ router.put("/cards/:cardId/edit", (req, res) => {
       });
     });
 });
-
 
 router.delete("/cards/:cardId", (req, res) => {
   const { cardId } = req.params;
