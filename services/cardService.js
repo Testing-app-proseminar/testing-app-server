@@ -11,15 +11,20 @@ async function getCards() {
 }
 
 async function getOneCard(cardId) {
-  if (!mongoose.Types.ObjectId.isValid(cardId)) {
-    res.status(400).json({ message: "Specified card ID is not valid" });
-    return;
-  }
 
-  const findCardById = await Card.findById(cardId)
-  return findCardById;
+  const card = await Card.findById(cardId)
+  return card;
 }
 
+async function editCard(cardId, newCardData) {
 
+  const modifiedCard = await Card.findByIdAndUpdate(cardId, newCardData, {new: true})
+  return modifiedCard
+}
 
-module.exports = {createCard, getCards, getOneCard}
+async function deleteCard(cardId) {
+  const deleteCard = await Card.findByIdAndDelete(cardId)
+  return deleteCard
+}
+
+module.exports = {createCard, getCards, getOneCard, editCard, deleteCard}
