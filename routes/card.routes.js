@@ -21,10 +21,9 @@ router.post("/cards", isAuthenticated, async (req, res) => {
   }
 });
 
-router.get("/cards", isAuthenticated, async (req, res) => {
-  const userId = req.payload._id
+router.get("/cards", async (req, res) => {
   try {
-    const allCards = await getCards({createdBy : userId});
+    const allCards = await getCards();
     res.json(allCards);
   } catch (err) {
     console.log("Error getting the list of Cards...", err);

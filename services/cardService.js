@@ -5,8 +5,8 @@ async function createCard(cardData) {
   return newCard;
 }
 
-async function getCards({createdBy : userId}) {
-  const allCards = await Card.find({createdBy : userId});
+async function getCards() {
+  const allCards = await Card.find();
   return allCards
 }
 
